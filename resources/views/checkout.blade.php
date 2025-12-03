@@ -76,12 +76,35 @@
 
   <script>
     const btn = document.getElementById('payBtn');
-    btn && btn.addEventListener('click', async () => {
-      const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-      const res = await fetch('{{ route('checkout.pay', $order) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf } });
-      const json = await res.json();
-      if (json && json.ok) { location.reload(); }
-    });
+    if (btn) {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.textContent = 'Memproses...';
+        
+        try {
+          const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+          const res = await fetch('{{ route('checkout.pay', $order) }}', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/json' }
+          });
+          
+          const json = await res.json();
+          
+          if (res.ok && json.status === 'success') {
+            // Redirect to success page
+            window.location.href = '{{ route('checkout.success') }}?order=' + json.order_id;
+          } else {
+            alert('Error: ' + (json.message || 'Unknown error'));
+            btn.disabled = false;
+            btn.textContent = 'Bayar Sekarang';
+          }
+        } catch (err) {
+          alert('Network error: ' + err.message);
+          btn.disabled = false;
+          btn.textContent = 'Bayar Sekarang';
+        }
+      });
+    }
   </script>
 </body>
 

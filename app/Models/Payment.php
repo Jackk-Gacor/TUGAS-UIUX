@@ -12,6 +12,7 @@ class Payment extends Model
         'amount',
         'status',
         'transaction_ref',
+        'qris_proof_path',
     ];
 
     public function order()

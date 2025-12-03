@@ -853,9 +853,16 @@
         const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         try {
           const res = await fetch('{{ route('checkout') }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify(payload) });
-          if (!res.ok) { throw new Error('HTTP ' + res.status); }
+          if (!res.ok) {
+            const json = await res.json();
+            throw new Error(json.message || ('HTTP ' + res.status));
+          }
           const json = await res.json();
-          if (json && json.ok) { window.location.href = '{{ url('/checkout') }}/' + json.order_id; }
+          if (json && (json.ok || json.status === 'success')) {
+            window.location.href = '{{ url('/checkout') }}/' + json.order_id;
+          } else {
+            throw new Error(json.message || 'Unknown error');
+          }
         } catch (err) {
           const errBox = document.getElementById('checkoutError');
           if (errBox) { errBox.textContent = 'Gagal membuat order (' + (err.message || 'error') + ')'; }

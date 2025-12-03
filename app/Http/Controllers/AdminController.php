@@ -154,6 +154,40 @@ class AdminController extends Controller
 
         return $redirect->with('status', "Berhasil menghapus {$deletedCount} pesanan.");
     }
+
+    public function pembukuan()
+    {
+        // Get monthly sales data
+        $monthlySales = \DB::table('payments')
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(DISTINCT order_id) as order_count, SUM(amount) as total_amount')
+            ->where('status', 'paid')
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
+            ->get();
+
+        // Get payment methods data
+        $paymentMethods = \DB::table('payments')
+            ->selectRaw('type as method, COUNT(*) as transaction_count, SUM(amount) as total_amount')
+            ->where('status', 'paid')
+            ->groupBy('type')
+            ->orderByRaw('SUM(amount) DESC')
+            ->get();
+
+        // Calculate total for all payments
+        $totalAllPayments = \DB::table('payments')
+            ->where('status', 'paid')
+            ->sum('amount');
+
+        // Calculate percentages
+        if ($totalAllPayments > 0) {
+            $paymentMethods = $paymentMethods->map(function ($item) use ($totalAllPayments) {
+                $item->percentage = round(($item->total_amount / $totalAllPayments) * 100, 1);
+                return $item;
+            });
+        }
+
+        return view('admin.pembukuan', compact('monthlySales', 'paymentMethods', 'totalAllPayments'));
+    }
 }
 
 
