@@ -39,8 +39,10 @@ class OrderController extends Controller
             $validated = $request->validate(
                 [
                     'customer_name' => 'required|string|max:255',
-                    'customer_phone' => 'required|string|regex:/^[0-9\-\+]{10,15}$/|max:20',
-                    'payment_method' => 'required|in:cash,qris,COD,QRIS,Transfer',
+                    'customer_phone' => 'required|string|min:3|max:20',
+
+                   'payment_method' => 'required|string',
+
                     'items' => 'required|array|min:1',
                     'items.*.name' => 'required|string|max:255',
                     'items.*.priceNumber' => 'required|numeric|min:0',
@@ -133,13 +135,8 @@ class OrderController extends Controller
             });
 
             // Return success response with order ID and redirect URL
-            return response()->json([
-                'status' => 'success',
-                'ok' => true,  // Keep for backward compatibility
-                'order_id' => $order->id,
-                'payment_method' => strtolower($order->payment_method),
-                'redirect' => route('checkout.success', ['order' => $order->id]),
-            ], 200);
+            return redirect()->route('checkout.show', $order->id);
+
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Handle validation errors (422 on validation failure)

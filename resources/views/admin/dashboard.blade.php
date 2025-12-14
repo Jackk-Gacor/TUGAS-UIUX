@@ -15,7 +15,7 @@
         <!-- Left Sidebar -->
         <aside class="w-64 bg-gray-900 text-white fixed h-screen overflow-y-auto flex flex-col shadow-lg">
             <div class="p-6 border-b border-gray-800">
-                <div class="text-2xl font-bold">LOGO</div>
+                <div class="text-2xl font-bold">PAK BIE</div>
             </div>
 
             <nav class="flex-1 px-3 py-6 space-y-2">
