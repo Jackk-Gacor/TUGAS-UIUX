@@ -10,30 +10,48 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+
+    /*
+    |--------------------------------------------------------------------------
+    | Middleware
+    |--------------------------------------------------------------------------
+    | Admin middleware DIHAPUS karena admin tidak memakai login (demo)
+    | Tidak ada alias admin.auth di sini
+    */
+
     ->withMiddleware(function (Middleware $middleware): void {
-    $middleware->alias([
-        'admin.auth' => \App\Http\Middleware\AdminAuth::class,
-    ]);
-})
+        // Kosong (tidak ada middleware admin)
+    })
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exception Handling
+    |--------------------------------------------------------------------------
+    */
+
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Return JSON responses for requests that expect JSON
         $exceptions->render(function (\Throwable $e, $request) {
-            // Check if the request wants JSON by various methods
-            $wantsJson = $request->expectsJson() || 
-                        $request->wantsJson() || 
-                        $request->isJson() || 
-                        str_contains($request->header('Accept', ''), 'application/json') ||
-                        str_contains($request->header('Content-Type', ''), 'application/json') ||
-                        $request->path() === 'checkout' ||
-                        str_starts_with($request->path(), 'checkout/');
-                        
+            $wantsJson =
+                $request->expectsJson() ||
+                $request->wantsJson() ||
+                $request->isJson() ||
+                str_contains($request->header('Accept', ''), 'application/json') ||
+                str_contains($request->header('Content-Type', ''), 'application/json') ||
+                $request->path() === 'checkout' ||
+                str_starts_with($request->path(), 'checkout/');
+
             if ($wantsJson) {
-                $statusCode = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
+                $statusCode = method_exists($e, 'getStatusCode')
+                    ? $e->getStatusCode()
+                    : 500;
+
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => $e->getMessage() ?: 'An error occurred',
-                    'detail' => config('app.debug') ? $e->getMessage() : null,
-                ], $statusCode ?? 500);
+                    'detail'  => config('app.debug') ? $e->getMessage() : null,
+                ], $statusCode);
             }
         });
-    })->create();
+    })
+
+    ->create();

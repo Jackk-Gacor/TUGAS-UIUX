@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Admin\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,40 +39,24 @@ Route::post('/checkout/{order}/upload-proof', [OrderController::class, 'uploadQr
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN AUTH (LOGIN)
+| ADMIN ROUTES (NO LOGIN - DEMO)
 |--------------------------------------------------------------------------
 */
 
-Route::get('/admin/login', function () {
-    return view('admin.login');
-})->name('admin.login');
+Route::get('/admin', [AdminController::class, 'index'])
+    ->name('admin.dashboard');
 
-Route::post('/admin/login', [AuthController::class, 'login'])
-    ->name('admin.login.submit');
+Route::get('/admin/pembukuan', [AdminController::class, 'pembukuan'])
+    ->name('admin.pembukuan');
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN ROUTES (PROTECTED)
-|--------------------------------------------------------------------------
-*/
+Route::get('/admin/orders/{order}/edit', [AdminController::class, 'edit'])
+    ->name('admin.orders.edit');
 
-Route::middleware('admin.auth')->group(function () {
+Route::put('/admin/orders/{order}', [AdminController::class, 'update'])
+    ->name('admin.orders.update');
 
-    Route::get('/admin', [AdminController::class, 'index'])
-        ->name('admin.dashboard');
+Route::delete('/admin/orders/{order}', [AdminController::class, 'destroy'])
+    ->name('admin.orders.destroy');
 
-    Route::get('/admin/pembukuan', [AdminController::class, 'pembukuan'])
-        ->name('admin.pembukuan');
-
-    Route::get('/admin/orders/{order}/edit', [AdminController::class, 'edit'])
-        ->name('admin.orders.edit');
-
-    Route::put('/admin/orders/{order}', [AdminController::class, 'update'])
-        ->name('admin.orders.update');
-
-    Route::delete('/admin/orders/{order}', [AdminController::class, 'destroy'])
-        ->name('admin.orders.destroy');
-
-    Route::post('/admin/orders/bulk-delete', [AdminController::class, 'bulkDestroy'])
-        ->name('admin.orders.bulk-destroy');
-});
+Route::post('/admin/orders/bulk-delete', [AdminController::class, 'bulkDestroy'])
+    ->name('admin.orders.bulk-destroy');
