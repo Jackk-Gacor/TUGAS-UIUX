@@ -280,7 +280,7 @@
         uploadBtn.textContent = 'Mengunggah...';
 
         try {
-          const response = await fetch('{{ route("checkout.upload-proof", $order) }}', {
+          const response = await fetch('{{ route("checkout.upload-proof", $order->id) }}', {
             method: 'POST',
             body: formData,
           });

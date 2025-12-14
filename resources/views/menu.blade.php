@@ -859,7 +859,7 @@
           }
           const json = await res.json();
           if (json && (json.ok || json.status === 'success')) {
-            window.location.href = '{{ url('/checkout') }}/' + json.order_id;
+           window.location.href = '{{ url('/checkout/order') }}/' + json.order_id;
           } else {
             throw new Error(json.message || 'Unknown error');
           }

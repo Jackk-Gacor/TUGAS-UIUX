@@ -11,11 +11,14 @@ use App\Http\Controllers\AdminController;
 |--------------------------------------------------------------------------
 */
 
+// ✅ HOME BENAR (tidak redirect)
 Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::get('/menu', [MenuController::class, 'index'])->name('menu');
+// ✅ MENU TETAP
+Route::get('/menu', [MenuController::class, 'index'])
+    ->name('menu');
 
 /*
 |--------------------------------------------------------------------------
@@ -23,23 +26,29 @@ Route::get('/menu', [MenuController::class, 'index'])->name('menu');
 |--------------------------------------------------------------------------
 */
 
-Route::post('/checkout', [OrderController::class, 'store'])->name('checkout');
+// CREATE ORDER
+Route::post('/checkout', [OrderController::class, 'store'])
+    ->name('checkout');
 
+// SHOW CHECKOUT PAGE
 Route::get('/checkout/order/{order}', [OrderController::class, 'show'])
     ->name('checkout.show');
 
+// PAY ORDER
 Route::post('/checkout/{order}/pay', [OrderController::class, 'pay'])
     ->name('checkout.pay');
 
-Route::get('/checkout/success', [OrderController::class, 'successPage'])
-    ->name('checkout.success');
-
+// UPLOAD QRIS
 Route::post('/checkout/{order}/upload-proof', [OrderController::class, 'uploadQrisProof'])
     ->name('checkout.upload-proof');
 
+// SUCCESS PAGE
+Route::get('/checkout/success', [OrderController::class, 'successPage'])
+    ->name('checkout.success');
+
 /*
 |--------------------------------------------------------------------------
-| ADMIN ROUTES (NO LOGIN - DEMO)
+| ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
 

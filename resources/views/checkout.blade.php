@@ -92,7 +92,7 @@
           
           if (res.ok && json.status === 'success') {
             // Redirect to success page
-            window.location.href = '{{ route('checkout.success') }}?order=' + json.order_id;
+            window.location.href = '{{ route('checkout.success') }}?order={{ $order->id }}';
           } else {
             alert('Error: ' + (json.message || 'Unknown error'));
             btn.disabled = false;
